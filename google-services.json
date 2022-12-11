@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "133060323513",
+    "project_id": "chatterbox-c7b80",
+    "storage_bucket": "chatterbox-c7b80.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133060323513:android:28cda0fe7b84d302cc1368",
+        "android_client_info": {
+          "package_name": "com.aaditya_paul.ChatterBox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "133060323513-0u5u7fsosb2rlj55nm9a1t0g4tgbv5ao.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aaditya_paul.ChatterBox",
+            "certificate_hash": "28cfb9166755276b56dca31b764b527559309dbf"
+          }
+        },
+        {
+          "client_id": "133060323513-90snohlhea5sbsulpt48seve4h8aubqd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aaditya_paul.ChatterBox",
+            "certificate_hash": "ff0ffca13d2d802387f1df2ac13918bfb1194de7"
+          }
+        },
+        {
+          "client_id": "133060323513-ilfliluaeivqptei7m2tv7rp85h8filh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgZzZX1AM48UlW2p8bRFVSmxMO45gSu08"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "133060323513-ilfliluaeivqptei7m2tv7rp85h8filh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
