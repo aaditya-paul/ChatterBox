@@ -9,10 +9,10 @@ export default class Loading extends Component {
         style={{
           height: '100%',
           justifyContent: 'center',
-          backgroundColor: '#08552C',
+          backgroundColor: 'black',
         }}
       >
-        <ActivityIndicator color="#011E2D" size={90} />
+        <ActivityIndicator color="white" size={90} />
         <StatusBar translucent backgroundColor="transparent" />
       </View>
     );

@@ -82,7 +82,7 @@ export default class SignUp extends Component {
                   marginTop: 50,
                 }}
                 size={GoogleSigninButton.Size.Wide}
-                color={GoogleSigninButton.Color.Light}
+                color={GoogleSigninButton.Color.Dark}
                 onPress={this.googleSignin}
               />
             </View>
@@ -98,7 +98,7 @@ export default class SignUp extends Component {
 const styles = StyleSheet.create({
   main: {
     height: '100%',
-    backgroundColor: '#08552C',
+    backgroundColor: 'black',
   },
   mainSubset: {
     marginTop: 80,

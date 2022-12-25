@@ -2,8 +2,11 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import React, { useEffect } from 'react';
 import { DUMMY_INFO } from '../../../assets';
 import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 const ChatListItem = ({ chat }) => {
+  const navigation = useNavigation();
+
   const logout = () => {
     auth()
       .signOut()
@@ -13,8 +16,14 @@ const ChatListItem = ({ chat }) => {
   };
 
   return (
-    <View style={styles.main}>
-      <TouchableOpacity onPress={logout}>
+    <View style={styles.main_darkTheme}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('chat', {
+            details: { name: chat.user.name, image: chat.user.image },
+          });
+        }}
+      >
         <View style={styles.wrapper_one}>
           <View style={styles.imgWrapper}>
             <Image
@@ -25,8 +34,10 @@ const ChatListItem = ({ chat }) => {
           </View>
           <View style={styles.wrapper_two}>
             <View style={styles.wrapper_three}>
-              <Text style={styles.chatPreviewText}>{chat.user.name}</Text>
-              <Text style={styles.chatPreviewText}>
+              <Text style={styles.chatPreviewText_darkTheme}>
+                {chat.user.name}
+              </Text>
+              <Text style={styles.chatPreviewText_darkTheme}>
                 {' '}
                 {chat.lastMessage.time}
               </Text>
@@ -34,7 +45,7 @@ const ChatListItem = ({ chat }) => {
             <View style={styles.lastMsgWrapper}>
               <Text
                 style={[
-                  styles.chatPreviewText,
+                  styles.chatPreviewText_darkTheme,
                   { fontSize: 16, fontFamily: 'font4', opacity: 0.7 },
                 ]}
               >
@@ -51,8 +62,26 @@ const ChatListItem = ({ chat }) => {
 export default ChatListItem;
 
 const styles = StyleSheet.create({
-  main: {
-    // backgroundColor: 'green',
+  main_lightTheme: {
+    // white theme
+    backgroundColor: '#e4e4e4',
+    // black theme
+    // backgroundColor: '#1b1b1b',
+    padding: 10,
+    marginHorizontal: 10,
+    marginVertical: 5,
+    borderWidth: 0,
+    borderColor: '#2d2c2c',
+    borderRadius: 10,
+    borderBottomWidth: 2,
+    elevation: 1.5,
+  },
+  main_darkTheme: {
+    // white theme
+    // backgroundColor: '#e4e4e4',
+    // black theme
+    backgroundColor: '#1b1b1b',
+
     padding: 10,
     marginHorizontal: 10,
     marginVertical: 5,
@@ -70,11 +99,17 @@ const styles = StyleSheet.create({
   wrapper_one: {
     flexDirection: 'row',
   },
-  chatPreviewText: {
+  chatPreviewText_lightTheme: {
     padding: 5,
     fontFamily: 'font3',
     fontSize: 18,
     // color: '#d6d6d6',
+  },
+  chatPreviewText_darkTheme: {
+    padding: 5,
+    fontFamily: 'font3',
+    fontSize: 18,
+    color: 'white',
   },
   wrapper_three: {
     justifyContent: 'space-between',

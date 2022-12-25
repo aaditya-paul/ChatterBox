@@ -8,7 +8,7 @@ export default class CheckAuthScreen extends Component {
     auth().onAuthStateChanged((user) => {
       if (user) {
         this.props.navigation.replace('home');
-        console.log(user);
+        console.log(user.email);
       } else {
         this.props.navigation.replace('signUp');
       }
