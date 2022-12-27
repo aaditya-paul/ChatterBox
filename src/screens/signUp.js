@@ -38,6 +38,20 @@ export default class SignUp extends Component {
     this.chechAuthState();
   }
 
+  uploadUserData = async () => {
+    await firestore()
+      .collection('users')
+      .doc('abc')
+      .set({
+        name: 'Ada Lovelace',
+        age: 30,
+      })
+
+      .then(() => {
+        console.log('User added!');
+      });
+  };
+
   googleSignin = async () => {
     // Check if your device supports Google Play
     await GoogleSignin.hasPlayServices({
@@ -48,7 +62,20 @@ export default class SignUp extends Component {
     // Create a Google credential with the token
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     // Sign-in the user with the credential
-    return auth().signInWithCredential(googleCredential);
+    return auth()
+      .signInWithCredential(googleCredential)
+      .then((user) => {
+        firestore()
+          .collection('users')
+          .doc(user.user.uid)
+          .set({
+            uid: user.user.uid,
+          })
+
+          .then(() => {
+            console.log('User added!');
+          });
+      });
   };
   render() {
     return (
@@ -75,21 +102,6 @@ export default class SignUp extends Component {
               size={GoogleSigninButton.Size.Wide}
               color={GoogleSigninButton.Color.Dark}
               onPress={this.googleSignin}
-            />
-
-            <Button
-              title="lah"
-              onPress={() => {
-                firestore()
-                  .collection('Users')
-                  .add({
-                    name: 'Ada Lovelace',
-                    age: 30,
-                  })
-                  .then(() => {
-                    console.log('User added!');
-                  });
-              }}
             />
           </View>
         </View>

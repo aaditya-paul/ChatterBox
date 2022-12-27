@@ -13,6 +13,11 @@ import {
 import React, { Component } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import auth from '@react-native-firebase/auth';
+import QRCode from 'react-native-qrcode-svg';
+import Loading from './loading';
+
+const logo = require('../../assets/adaptive-icon.png');
+
 export default class Profile extends Component {
   constructor() {
     super();
@@ -41,126 +46,148 @@ export default class Profile extends Component {
   }
 
   render() {
-    return (
-      <View style={styles.main}>
-        {/* header */}
-        <View style={styles.header}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                this.props.navigation.goBack();
+    if (this.state.uid == '' || this.state.pic == '') {
+      return <Loading />;
+    } else {
+      return (
+        <View style={styles.main}>
+          {/* header */}
+          <View style={styles.header}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
               }}
-              style={[
-                styles.headerPfp,
-                {
-                  backgroundColor: '#3D3D90',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                },
-              ]}
             >
-              <Ionicons name="arrow-back" size={30} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.headerText}>{this.state.name}</Text>
-            <Image
-              style={styles.headerPfp}
-              source={{
-                uri: this.state.pic,
-              }}
-            />
+              <TouchableOpacity
+                onPress={() => {
+                  this.props.navigation.goBack();
+                }}
+                style={[
+                  styles.headerPfp,
+                  {
+                    backgroundColor: '#3D3D90',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  },
+                ]}
+              >
+                <Ionicons name="arrow-back" size={30} color="white" />
+              </TouchableOpacity>
+              <Text style={styles.headerText}>{this.state.name}</Text>
+              <Image
+                style={styles.headerPfp}
+                source={{
+                  uri: this.state.pic,
+                }}
+              />
+            </View>
           </View>
-        </View>
-        <ScrollView>
-          {/* big pfp icon */}
-          <View>
-            <TouchableOpacity>
+          <ScrollView>
+            {/* big pfp icon */}
+            <View>
               <Image
                 style={styles.mainPfp}
                 source={{
                   uri: this.state.pic,
                 }}
               />
-            </TouchableOpacity>
-          </View>
-          {/* edit button */}
-          <View>
-            <TouchableOpacity
-              onPress={() => {
-                Alert.alert(
-                  'Notice ⚠️',
-                  'To edit your profile you need to change your google information.',
-                  [
-                    {
-                      text: 'Cancel',
-                      style: 'cancel',
-                    },
-                    {
-                      text: 'Go to GOOGLE MANAGE ACCOUNTS',
-                      style: 'default',
-                      onPress: () => {
-                        Linking.openURL(
-                          'https://myaccount.google.com/?utm_source=chrome-profile-chooser&pli=1'
-                        );
-                      },
-                    },
-                  ]
-                );
-              }}
-              style={styles.editBtn}
-            >
-              <View>
-                <Text style={styles.editBtnTxt}>EDIT PROFILE</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          {/* details */}
-          <View style={styles.details}>
-            <View style={styles.detailSegments}>
-              <Text style={styles.detailsTitle}>Name</Text>
-              <Text style={styles.detailsVal}>{this.state.name}</Text>
             </View>
-            <View style={styles.detailSegments}>
-              <Text style={styles.detailsTitle}>Email</Text>
-              <Text style={styles.detailsVal}>{this.state.email}</Text>
-            </View>
-
-            <View style={styles.detailSegments}>
-              <Text style={styles.detailsTitle}>Phone</Text>
-              <Text style={[styles.detailsVal, { color: 'gray' }]}>
-                {this.state.phn == null ? 'No phone number' : this.state.phn}
-              </Text>
-            </View>
-            <View style={styles.detailSegments}>
-              <Text style={styles.detailsTitle}>UID</Text>
+            {/* edit button */}
+            <View>
               <TouchableOpacity
                 onPress={() => {
-                  Clipboard.setString(this.state.uid);
+                  Alert.alert(
+                    'Notice ⚠️',
+                    'To edit your profile you need to change your google information.',
+                    [
+                      {
+                        text: 'Cancel',
+                        style: 'cancel',
+                      },
+                      {
+                        text: 'Go to MANAGE GOOGLE ACCOUNTS',
+                        style: 'default',
+                        onPress: () => {
+                          Linking.openURL(
+                            'https://myaccount.google.com/?utm_source=chrome-profile-chooser&pli=1'
+                          );
+                        },
+                      },
+                    ]
+                  );
+                }}
+                style={styles.editBtn}
+              >
+                <View>
+                  <Text style={styles.editBtnTxt}>EDIT PROFILE</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            {/* qr code */}
+
+            <View style={styles.qrcode}>
+              <TouchableOpacity
+                onPress={() => {
                   ToastAndroid.show(
-                    'Copied to clipboard ✅',
-                    ToastAndroid.SHORT
+                    'Let your friend scan this QR CODE to add you as friend 😄',
+                    ToastAndroid.LONG
                   );
                 }}
               >
-                <Text
-                  style={[
-                    styles.detailsVal,
-                    { fontFamily: 'font2', color: '#e5d5a9' },
-                  ]}
-                >
-                  {this.state.uid}
-                </Text>
+                <QRCode
+                  size={180}
+                  value={this.state.uid}
+                  logo={{ uri: this.state.pic }}
+                  logoSize={70}
+                  logoBorderRadius={70 / 2}
+                  backgroundColor="silver"
+                />
               </TouchableOpacity>
             </View>
-          </View>
-        </ScrollView>
-      </View>
-    );
+            {/* details */}
+            <View style={styles.details}>
+              <View style={styles.detailSegments}>
+                <Text style={styles.detailsTitle}>Name</Text>
+                <Text style={styles.detailsVal}>{this.state.name}</Text>
+              </View>
+              <View style={styles.detailSegments}>
+                <Text style={styles.detailsTitle}>Email</Text>
+                <Text style={styles.detailsVal}>{this.state.email}</Text>
+              </View>
+
+              <View style={styles.detailSegments}>
+                <Text style={styles.detailsTitle}>Phone</Text>
+                <Text style={[styles.detailsVal, { color: 'gray' }]}>
+                  {this.state.phn == null ? 'No phone number' : this.state.phn}
+                </Text>
+              </View>
+              <View style={styles.detailSegments}>
+                <Text style={styles.detailsTitle}>UID</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    Clipboard.setString(this.state.uid);
+                    ToastAndroid.show(
+                      'Copied to clipboard ✅',
+                      ToastAndroid.SHORT
+                    );
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.detailsVal,
+                      { fontFamily: 'font2', color: '#e5d5a9' },
+                    ]}
+                  >
+                    {this.state.uid}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      );
+    }
   }
 }
 
@@ -248,5 +275,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     margin: 10,
+  },
+  qrcode: {
+    alignSelf: 'center',
+    borderColor: 'gray',
+    borderWidth: 3,
   },
 });
