@@ -1,17 +1,28 @@
 import { Text, StyleSheet, View } from 'react-native';
 import React, { Component } from 'react';
-
+import auth from '@react-native-firebase/auth';
 export default class Bubble extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { userUid: '' };
+  }
+
+  getuid = async () => {
+    const uid = await auth().currentUser.uid;
+    this.setState({ userUid: uid });
+  };
+
+  componentDidMount() {
+    this.getuid();
   }
 
   render() {
     return (
       <View style={styles.main}>
         <View
-          style={this.props.msgType == 'send' ? styles.send : styles.recieve}
+          style={
+            this.props.uid == this.state.userUid ? styles.send : styles.recieve
+          }
         >
           <Text style={styles.bubbleText}>{this.props.text}</Text>
         </View>

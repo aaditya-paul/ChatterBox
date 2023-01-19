@@ -8,21 +8,98 @@ import {
   Touchable,
   TouchableOpacity,
   Image,
+  FlatList,
+  Animated,
 } from 'react-native';
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import auth from '@react-native-firebase/auth';
 import Bubble from '../components/chatBubbles/bubbles';
 import { Ionicons } from '@expo/vector-icons';
+import firestore from '@react-native-firebase/firestore';
 
 export default class Chat extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      chatArray: [],
+      msgwritten: '',
+      msgDisplayed: '',
+      scrollY: new Animated.Value(0),
+    };
+    this.flashListRef = createRef();
   }
 
-  // componentDidMount() {
-  //   console.log(this.props.route.params.name);
-  // }
+  setRecentChat = async (time) => {
+    var obj = {
+      id: this.props.route.params.details.uid,
+      uid: this.props.route.params.details.uid,
+      name: this.props.route.params.details.name,
+      pic: this.props.route.params.details.pic,
+      lastMessage: {
+        msg: this.state.msgwritten,
+        time: time,
+      },
+    };
+
+    firestore().collection('users').doc(auth().currentUser.uid).update({
+      recentChat: obj,
+      timestamp: firestore.FieldValue.serverTimestamp(),
+    });
+  };
+
+  postMsgs = async () => {
+    var createdAt = Date().toString();
+    var msg = {
+      msg: this.state.msgwritten,
+      uid: auth().currentUser.uid,
+      createdAt: createdAt,
+    };
+    if (this.state.msgwritten !== '') {
+      await firestore()
+        .collection('msg')
+        .doc(auth().currentUser.uid)
+        .collection(this.props.route.params.details.uid)
+        .doc()
+        .set(msg);
+
+      await firestore()
+        .collection('msg')
+        .doc(this.props.route.params.details.uid)
+        .collection(auth().currentUser.uid)
+        .doc()
+        .set(msg);
+
+      this.setRecentChat(createdAt);
+
+      this.setState({ msgwritten: '' });
+    } else {
+      return null;
+    }
+  };
+
+  fetchMsgs = async () => {
+    await firestore()
+      .collection('msg')
+      .doc(auth().currentUser.uid)
+      .collection(this.props.route.params.details.uid)
+      .onSnapshot((documentSnapshot) => {
+        if (documentSnapshot.empty) {
+          return null;
+        } else {
+          let sortedArray = documentSnapshot.docs.sort((a, b) => {
+            return new Date(a._data.createdAt) - new Date(b._data.createdAt);
+          });
+          this.setState({ chatArray: sortedArray });
+        }
+      });
+  };
+
+  componentDidMount() {
+    this.fetchMsgs();
+  }
+  componentWillUnmount() {
+    this.flashListRef = null;
+  }
 
   render() {
     return (
@@ -56,39 +133,49 @@ export default class Chat extends Component {
             <TouchableOpacity>
               <Image
                 style={styles.headerPfp}
-                source={{ uri: this.props.route.params.details.image }}
+                source={{ uri: this.props.route.params.details.pic }}
               />
             </TouchableOpacity>
           </View>
         </View>
         <View style={styles.container}>
           {/*  chats */}
-          <ScrollView style={styles.scroll}>
-            <Bubble text="lol" msgType="send" />
-            <Bubble text="what happened" msgType="recieve" />
-            <Bubble
-              text="nothin just my stomach hurts ahhhhhhhhhhhhhh"
-              msgType="send"
+
+          <View style={styles.scroll}>
+            <FlatList
+              ref={this.flashListRef}
+              onContentSizeChange={() => {
+                if (this.flashListRef.current)
+                  this.flashListRef.current.scrollToEnd({ animated: true });
+              }}
+              renderItem={function ({ item }) {
+                return <Bubble text={item._data.msg} uid={item._data.uid} />;
+              }}
+              data={this.state.chatArray}
+              keyExtractor={(_, i) => i.toString()}
             />
-            {/* dummy chat here */}
-            <Bubble text="did u take medicine" msgType="recieve" />
-            <Bubble text="No just drinking water" msgType="send" />
-            <Bubble text="Ohh..." msgType="recieve" />
-            <Bubble text="get Well soon :)" msgType="recieve" />
-            <Bubble text="haha u bet i will" msgType="send" />
-            <Bubble text="love ya 💀❤️‍🩹🙂" msgType="recieve" />
-            <Bubble text="love u too!" msgType="send" />
-            <Bubble text="byee" msgType="recieve" />
-          </ScrollView>
+          </View>
+
           {/* textInput / msgbar and send button */}
           <View style={styles.textInputWrapper}>
             <TextInput
               style={styles.textInput}
               placeholder="Type a message..."
               placeholderTextColor="white"
+              onChangeText={(txt) => {
+                this.setState({ msgwritten: txt, msgDisplayed: txt });
+              }}
+              value={this.state.msgDisplayed}
               multiline
             />
-            <TouchableOpacity style={styles.sendBtn}>
+            <TouchableOpacity
+              style={styles.sendBtn}
+              onPress={() => {
+                this.setState({ msgDisplayed: '' });
+                this.postMsgs();
+                // this.fetchMsgs();
+              }}
+            >
               <Ionicons name="send" size={30} color="black" />
             </TouchableOpacity>
           </View>
@@ -104,7 +191,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   container: {
-    margin: 20,
+    marginHorizontal: 20,
+    height: '100%',
   },
   textInput: {
     padding: 15,
@@ -121,7 +209,7 @@ const styles = StyleSheet.create({
   },
   textInputWrapper: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 10,
     zIndex: 5,
     flexDirection: 'row',
     width: '100%',
@@ -140,7 +228,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   scroll: {
-    marginTop: 110,
+    marginTop: 130,
     marginBottom: 80,
   },
   header: {

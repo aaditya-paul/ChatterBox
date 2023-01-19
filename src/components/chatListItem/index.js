@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import { DUMMY_INFO } from '../../../assets';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
+import moment from 'moment';
+import Loading from '../../screens/loading';
 
 const ChatListItem = ({ chat }) => {
   const navigation = useNavigation();
@@ -20,26 +22,26 @@ const ChatListItem = ({ chat }) => {
       <TouchableOpacity
         onPress={() => {
           navigation.navigate('chat', {
-            details: { name: chat.user.name, image: chat.user.image },
+            details: { name: chat.name, pic: chat.pic, uid: chat.uid },
           });
         }}
       >
         <View style={styles.wrapper_one}>
           <View style={styles.imgWrapper}>
             <Image
-              source={{ uri: chat.user.image }}
+              source={{ uri: chat.pic }}
               style={styles.pfp}
               resizeMode="contain"
             />
           </View>
           <View style={styles.wrapper_two}>
             <View style={styles.wrapper_three}>
+              <Text style={styles.chatPreviewText_darkTheme}>{chat.name}</Text>
               <Text style={styles.chatPreviewText_darkTheme}>
-                {chat.user.name}
-              </Text>
-              <Text style={styles.chatPreviewText_darkTheme}>
-                {' '}
-                {chat.lastMessage.time}
+                {moment().diff(moment(chat.lastMessage.time), 'days') > 0
+                  ? moment(chat.lastMessage.time).format('MM/DD')
+                  : moment(chat.lastMessage.time).format('h.mm a')}
+                {}
               </Text>
             </View>
             <View style={styles.lastMsgWrapper}>

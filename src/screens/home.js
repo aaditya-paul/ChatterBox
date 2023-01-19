@@ -9,6 +9,7 @@ import {
   Image,
   Dimensions,
   Animated,
+  FlatList,
 } from 'react-native';
 import React, { Component } from 'react';
 import {
@@ -19,53 +20,100 @@ import auth from '@react-native-firebase/auth';
 import ChatListItem from '../components/chatListItem/index';
 import { Ionicons } from '@expo/vector-icons';
 import SettingsFloatBtn from '../components/floatings/SettingsFloatBtn';
+import firestore from '@react-native-firebase/firestore';
+import Loading from './loading';
 
 const { width, height } = Dimensions.get('screen');
-const chat = {
-  id: '1',
-  user: {
-    image:
-      'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    name: 'Zuck Mukerberg',
+
+const chat = [
+  {
+    id: '4quqLcb9ncXVUaADO6o40ZaBuh52',
+    lastMessage: {
+      msg: 'ko',
+      time: 'Thu Jan 19 2023 18:27:23 GMT+0530 (IST)',
+    },
+    name: 'Aaditya Paul',
+    pic: 'https://lh3.googleusercontent.com/a/AEdFTp5TF4RO1W1iWKdDYJKsZNrh7Lx5pveKVCDfQNUzRQ=s96-c',
+    uid: '4quqLcb9ncXVUaADO6o40ZaBuh52',
   },
-  lastMessage: {
-    time: '9.40 PM',
-    msg: 'Byeee',
+  {
+    id: '4quqLcb9ncXVUaADO6o40ZaBuh52',
+    lastMessage: {
+      msg: 'ah',
+      time: 'Thu Jan 19 2023 18:29:51 GMT+0530 (IST)',
+    },
+    name: 'Aaditya Paul',
+    pic: 'https://lh3.googleusercontent.com/a/AEdFTp5TF4RO1W1iWKdDYJKsZNrh7Lx5pveKVCDfQNUzRQ=s96-c',
+    uid: '4quqLcb9ncXVUaADO6o40ZaBuh52',
   },
-};
+];
 
 export default class Home extends Component {
+  constructor() {
+    super();
+    this.state = {
+      data: '',
+    };
+  }
+
+  fetchRecentChats = async () => {
+    await firestore()
+      .collection('users')
+      .doc(auth().currentUser.uid)
+      .get()
+      .then((querySnapshot) => {
+        // console.log(querySnapshot.data().recentChat);
+        let data = [];
+        data.push(querySnapshot.data().recentChat);
+        this.setState({ data: data });
+      });
+  };
+
+  componentDidMount() {
+    this.fetchRecentChats();
+  }
+
+  componentDidUpdate() {
+    this.fetchRecentChats();
+  }
+
   render() {
-    return (
-      <View style={styles.main}>
-        <View style={styles.container}>
-          {/* header  */}
-          <View>
-            <Text style={styles.text_darkTheme}>ChatterBox</Text>
-          </View>
-          {/* search */}
-          <View>
-            <TextInput
-              style={styles.searchBar_darkTheme}
-              placeholder="Search by name, email or UID  🔍"
-              placeholderTextColor="white"
-              keyboardType="web-search"
-            />
-          </View>
+    if (this.state.data !== '') {
+      return (
+        <View style={styles.main}>
+          <View style={styles.container}>
+            {/* header  */}
+            <View>
+              <Text style={styles.text_darkTheme}>ChatterBox</Text>
+            </View>
+            {/* search */}
+            <View>
+              <TextInput
+                style={styles.searchBar_darkTheme}
+                placeholder="Search by name, email or UID  🔍"
+                placeholderTextColor="white"
+                keyboardType="web-search"
+              />
+            </View>
 
-          <View>
-            <ChatListItem chat={chat} />
-            <ChatListItem chat={chat} />
-            <ChatListItem chat={chat} />
-            <ChatListItem chat={chat} />
-            <ChatListItem chat={chat} />
-          </View>
+            <View>
+              <FlatList
+                renderItem={({ item }) => {
+                  return <ChatListItem chat={item} />;
+                }}
+                data={this.state.data}
+                keyExtractor={(_, i) => i.toString()}
+              />
+            </View>
 
-          {/* settings floatings */}
-          <SettingsFloatBtn navigate={this.props.navigation.navigate} />
+            {/* settings floatings */}
+            <SettingsFloatBtn navigate={this.props.navigation.navigate} />
+          </View>
         </View>
-      </View>
-    );
+      );
+    } else {
+      return <Loading />;
+    }
   }
 }
 

@@ -38,20 +38,6 @@ export default class SignUp extends Component {
     this.chechAuthState();
   }
 
-  uploadUserData = async () => {
-    await firestore()
-      .collection('users')
-      .doc('abc')
-      .set({
-        name: 'Ada Lovelace',
-        age: 30,
-      })
-
-      .then(() => {
-        console.log('User added!');
-      });
-  };
-
   googleSignin = async () => {
     // Check if your device supports Google Play
     await GoogleSignin.hasPlayServices({
@@ -68,9 +54,15 @@ export default class SignUp extends Component {
         firestore()
           .collection('users')
           .doc(user.user.uid)
-          .set({
-            uid: user.user.uid,
-          })
+          .set(
+            {
+              uid: user.user.uid,
+              name: user.user.displayName,
+              email: user.user.email,
+              pic: user.user.photoURL,
+            },
+            { merge: true }
+          )
 
           .then(() => {
             console.log('User added!');

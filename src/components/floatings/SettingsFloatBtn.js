@@ -106,7 +106,13 @@ export default class SettingsFloatBtn extends Component {
             },
           ]}
         >
-          <TouchableOpacity style={styles.newChatWrapper}>
+          <TouchableOpacity
+            onPress={() => {
+              this.animateOnClick();
+              this.props.navigate('addUser');
+            }}
+            style={styles.newChatWrapper}
+          >
             <View style={[styles.newChat, { backgroundColor: 'pink' }]}>
               <Ionicons name="person-add" size={30} color="black" />
             </View>
@@ -131,7 +137,15 @@ export default class SettingsFloatBtn extends Component {
             style={styles.newChatWrapper}
           >
             <Image
-              source={{ uri: auth().currentUser.photoURL }}
+              source={
+                auth().currentUser.photoURL == null
+                  ? {
+                      uri: 'https://i.pinimg.com/236x/fe/15/9f/fe159f0fa49b03c2907c0826de7ef291.jpg',
+                    }
+                  : {
+                      uri: auth().currentUser.photoURL,
+                    }
+              }
               style={styles.floatingProfileBtn}
             />
           </TouchableOpacity>

@@ -11,6 +11,7 @@ import CheckAuthScreen from '../screens/checkAuthScreen.js';
 import Chat from '../screens/chat.js';
 import Profile from '../screens/profile.js';
 import SettingsFloatBtn from '../components/floatings/SettingsFloatBtn.js';
+import AddUser from '../screens/addUser.js';
 
 const Stack = createStackNavigator();
 
@@ -32,18 +33,19 @@ export default class Stackk extends Component {
               cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
             }}
           />
-          <Stack.Screen
-            name="settings"
-            component={SettingsFloatBtn}
-            options={{
-              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-            }}
-          />
+
           <Stack.Screen
             name="profile"
             component={Profile}
             options={{
-              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+              cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+            }}
+          />
+          <Stack.Screen
+            name="addUser"
+            component={AddUser}
+            options={{
+              cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
             }}
           />
         </Stack.Navigator>

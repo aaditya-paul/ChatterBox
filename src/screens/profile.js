@@ -39,6 +39,7 @@ export default class Profile extends Component {
       uid: user.uid,
       pic: user.photoURL,
     });
+    console.log(user.photoURL);
   };
 
   componentDidMount() {
@@ -88,6 +89,7 @@ export default class Profile extends Component {
             <View>
               <Image
                 style={styles.mainPfp}
+                resizeMode="cover"
                 source={{
                   uri: this.state.pic,
                 }}
@@ -129,6 +131,11 @@ export default class Profile extends Component {
             <View style={styles.qrcode}>
               <TouchableOpacity
                 onPress={() => {
+                  auth()
+                    .currentUser.reload()
+                    .then(() => {
+                      console.log(auth().currentUser.photoURL);
+                    });
                   ToastAndroid.show(
                     'Let your friend scan this QR CODE to add you as friend 😄',
                     ToastAndroid.LONG
@@ -136,11 +143,11 @@ export default class Profile extends Component {
                 }}
               >
                 <QRCode
-                  size={180}
+                  size={230}
                   value={this.state.uid}
                   logo={{ uri: this.state.pic }}
-                  logoSize={70}
-                  logoBorderRadius={70 / 2}
+                  logoSize={60}
+                  logoBorderRadius={60 / 2}
                   backgroundColor="silver"
                 />
               </TouchableOpacity>
@@ -156,12 +163,13 @@ export default class Profile extends Component {
                 <Text style={styles.detailsVal}>{this.state.email}</Text>
               </View>
 
-              <View style={styles.detailSegments}>
+              {/* <View style={styles.detailSegments}>
                 <Text style={styles.detailsTitle}>Phone</Text>
                 <Text style={[styles.detailsVal, { color: 'gray' }]}>
                   {this.state.phn == null ? 'No phone number' : this.state.phn}
                 </Text>
-              </View>
+              </View> */}
+
               <View style={styles.detailSegments}>
                 <Text style={styles.detailsTitle}>UID</Text>
                 <TouchableOpacity
@@ -176,7 +184,7 @@ export default class Profile extends Component {
                   <Text
                     style={[
                       styles.detailsVal,
-                      { fontFamily: 'font2', color: '#e5d5a9' },
+                      { fontFamily: 'font8', color: '#e5d5a9' },
                     ]}
                   >
                     {this.state.uid}
@@ -235,16 +243,16 @@ const styles = StyleSheet.create({
   },
   editBtn: {
     backgroundColor: '#3D3D90',
-    paddingVertical: 25,
-    width: '42%',
+    paddingVertical: 20,
+    padding: 10,
     alignSelf: 'center',
     margin: 30,
     alignItems: 'center',
-    borderRadius: 24,
+    borderRadius: 15,
   },
   editBtnTxt: {
     fontFamily: 'font3_bold',
-    fontSize: 17,
+    fontSize: 15,
     color: 'white',
     marginHorizontal: 20,
     textAlign: 'center',
@@ -252,16 +260,17 @@ const styles = StyleSheet.create({
   details: {
     padding: 10,
     alignSelf: 'center',
+    width: '100%',
   },
   detailsTitle: {
     color: 'silver',
-    fontSize: 30,
+    fontSize: 25,
     fontFamily: 'font5',
     textAlign: 'left',
   },
   detailsVal: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'font5',
     textAlign: 'left',
     margin: 10,
